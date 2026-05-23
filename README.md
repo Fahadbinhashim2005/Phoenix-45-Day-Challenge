@@ -34,4 +34,4 @@ A challenge focused on:
 - Build real-world projects
 
 ---
-Started: May 2026
+Started: 23 May 2026
