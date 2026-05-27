@@ -78,14 +78,31 @@
                     </div>
                 </div>
             </section>
-            <section class="task-input">
-                <input type="text" id="taskInput" placeholder="Add a new task..." />
-                <button id="addTaskBtn">Add Task</button>
-            </section>
-            <section class="tasks">
-                <h2>Today's Tasks</h2>
-                <p id="emptyMessage">No tasks added yet.</p>
-                <ul id="taskList"></ul>
+            <section class="bottom-section">
+                <div class="tasks-container">
+                    <section class="task-input">
+                        <input type="text" id="taskInput" placeholder="Add a new task..." />
+                        <button id="addTaskBtn">Add Task</button>
+                    </section>
+                    <section class="tasks">
+                        <h2>Today's Tasks</h2>
+                        <p id="emptyMessage">No tasks added yet.</p>
+                        <ul id="taskList"></ul>
+                    </section>
+                </div>
+                <div class="widgets-container">
+                    <div class="widget-card">
+                        <h3>Calendar</h3>
+                        <p id="todayDate"></p>
+                    </div>
+
+                    <div class="widget-card">
+                        <h3>Daily Progress</h3>
+                        <div class="progress-circle">
+                            <span id="progressPercent">0%</span>
+                        </div>
+                    </div>
+                </div>
             </section>
         </main>
     </div>

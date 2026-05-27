@@ -78,3 +78,5 @@ function updateEmptyMessage(){
 }
 updateStats();
 updateEmptyMessage();
+
+document.getElementById("todayDate").textContent =new Date().toDateString();
