@@ -1,40 +1,120 @@
-🔥 PROJECT PHOENIX 🚀
+# Phoenix Task Manager V2 🚀
 
-Day: 1 / 45
-Date: 23-05-2026
+A modern productivity dashboard built using HTML, CSS, and JavaScript as part of **Project Phoenix – 45 Day Challenge**.
 
-Status:
-✅ Completed
+---
 
-Today's Project:
-Personal Task Manager
+## 📌 Features
 
-Repository:
-Phoenix-45-Day-Challenge ✅
+### ✅ Dashboard UI
 
-Current Streak:
-1 Day 🔥
+* Sidebar Navigation
+* Statistics Cards
+* Project Cards
+* Responsive Layout Structure
 
-───────────────────────
+### ✅ Dynamic Greeting
 
-Achievements:
-✅ Built dashboard layout
-✅ Learned Flexbox
-✅ Learned CSS Grid
-✅ Learned DOM Manipulation
-✅ Implemented Add Task
-✅ Implemented Delete Task
-✅ Implemented Complete Task
-✅ Connected GitHub
-✅ Pushed Day 1 project
+Greeting changes based on current time:
 
-Current Skill Progress:
-HTML      : 90%
-CSS       : 65%
-JavaScript: 18%
-React     : 0%
-Node.js   : 5%
-MongoDB   : 0%
+* Morning 🌅
+* Afternoon 🌞
+* Evening 🌇
+* Night 🌛
 
-Primary Objective:
-Master JavaScript Fundamentals through practical projects
+### ✅ Task Management
+
+* Add Tasks
+* Delete Tasks
+* Mark Tasks as Completed
+* Dynamic Task Updates
+
+### ✅ Dynamic Statistics
+
+Automatically updates:
+
+* Total Tasks
+* Completed Tasks
+* Pending Tasks
+
+### ✅ Empty State Logic
+
+Displays:
+
+```text
+No tasks added yet.
+```
+
+only when task list is empty.
+
+---
+
+## 🛠️ Technologies Used
+
+* HTML5
+* CSS3
+* JavaScript (Vanilla JS)
+
+---
+
+## 📚 Concepts Learned
+
+### JavaScript
+
+* DOM Manipulation
+* Event Listeners
+* Functions
+* Conditional Statements
+* querySelectorAll()
+* Dynamic UI Updates
+
+### CSS
+
+* Flexbox Layout
+* Card Design
+* Sidebar Layout
+* Responsive Structure
+
+### Project Development
+
+* UI Structuring
+* Dashboard Design
+* Component Thinking
+* Debugging JavaScript Errors
+
+---
+
+## 🚀 Future Improvements
+
+* Local Storage Support
+* Calendar Widget
+* Daily Progress Tracker
+* Task Categories
+* In Progress Status
+* Responsive Mobile Design
+* Dark Mode
+* Search & Filters
+
+---
+
+## 📸 Project Status
+
+Current Version:
+
+```text
+Phoenix Task Manager V2 (Work In Progress)
+```
+
+---
+
+## 🐦‍🔥 Project Phoenix
+
+This project is part of my **45-Day Full Stack Development Challenge** focused on consistency, learning, and building real-world projects daily.
+
+---
+
+## 👨‍💻 Developer
+
+**Fahad Bin Hashim**
+
+Stay Productive 🐦‍🔥
