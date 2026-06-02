@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phoenix Task Manager</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <aside>
+            <div class="logo">
+                <h2>Phoenix</h2>
+                <p>Task Manager</p>
+            </div>
+
+            <nav>
+                <ul>
+                    <li class="active"><i class="fa-solid fa-table-columns"></i>Dashboard</li>
+                    <li><i class="fa-regular fa-clock"></i>Today</li>
+                    <li><i class="fa-regular fa-folder"></i>Projects</li>
+                    <li><i class="fa-solid fa-list-check"></i>Tasks</li>
+                    <li><i class="fa-regular fa-calendar"></i>Calendar</li>
+                    <li><i class="fa-solid fa-chart-simple"></i>Progress</li>
+                    <li><i class="fa-solid fa-gear"></i>Settings</li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-projects">
+                <h3>Current Projects</h3>
+                <ul id="sidebarProjectsList"></ul>
+            </div>
+
+            <div class="profile">
+                <h4>Fahad</h4>
+                <p>Stay Productive 🐦‍🔥</p>
+            </div>
+        </aside>
+
+        <main>
+            <header>
+                <h1 id="greeting"></h1>
+                <p>Stay productive and finish your goals today.</p>
+            </header>
+
+            <section class="stats">
+                <div class="card"><h3>Total Tasks</h3><p id="totalTasks">0</p></div>
+                <div class="card"><h3>Completed Tasks</h3><p id="completedTasks">0</p></div>
+                <div class="card"><h3>In Progress</h3><p id="inProgressTasks">0</p></div>
+                <div class="card"><h3>Pending Tasks</h3><p id="pendingTasks">0</p></div>
+            </section>
+
+            <section class="projects">
+                <div class="projects-header">
+                    <h2>Your Projects</h2>
+                    <button id="newProjectBtn">+ Project</button>
+                </div>
+                <div class="project-container" id="projectContainer"></div>
+            </section>
+
+            <section class="bottom-section">
+                <div class="tasks-container">
+                    <section class="task-controls">
+                        <input type="text" id="searchTask" placeholder="🔍 Search tasks...">
+                        <select id="projectFilter">
+                            <option value="all">All Projects</option>
+                        </select>
+                        <button id="newTaskBtn">+</button>
+                    </section>
+
+                    <section class="tasks">
+                        <h2>Today's Tasks</h2>
+                        <p id="emptyMessage">No tasks added yet.</p>
+                        <div id="taskList"></div>
+                    </section>
+                </div>
+
+                <div class="widgets-container">
+                    <div class="widget-card">
+                        <div class="calendar-header">
+                            <h3 id="monthYear"></h3>
+                        </div>
+
+                        <div class="weekdays">
+                            <div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div><div>Su</div>
+                        </div>
+
+                        <div id="calendarGrid" class="calendar-grid"></div>
+                    </div>
+
+                    <div class="widget-card">
+                        <h3>Daily Progress</h3>
+                        <div class="progress-circle">
+                            <span id="progressPercent">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+            <h2>Create Task</h2>
+
+            <input type="text" id="modalTitle" placeholder="Task Title">
+
+            <select id="modalProject">
+                <option value="General">General</option>
+            </select>
+
+            <select id="modalCategory">
+                <option>Development</option>
+                <option>Study</option>
+                <option>Work</option>
+                <option>Personal</option>
+            </select>
+
+            <select id="modalPriority">
+                <option>Low</option>
+                <option>Medium</option>
+                <option>High</option>
+            </select>
+
+            <select id="modalStatus">
+                <option>Pending</option>
+                <option>In Progress</option>
+                <option>Completed</option>
+                <option>Paused</option>
+            </select>
+
+            <input type="date" id="modalDeadline">
+            <input type="time" id="modalStartTime">
+            <input type="time" id="modalEndTime">
+
+            <textarea id="modalNotes" placeholder="Notes..."></textarea>
+
+            <div class="modal-buttons">
+                <button id="closeModalBtn">Cancel</button>
+                <button id="createTaskBtn">Create Task</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="projectModal" class="modal">
+        <div class="modal-content">
+            <h2>Create Project</h2>
+            <input type="text" id="projectName" placeholder="Project Name">
+            <textarea id="projectDescription" placeholder="Project Description..."></textarea>
+
+            <div class="modal-buttons">
+                <button id="closeProjectModal">Cancel</button>
+                <button id="createProjectBtn">Create Project</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
