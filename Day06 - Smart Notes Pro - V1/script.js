@@ -10,6 +10,12 @@ let notes = [
         title: "JavaScript Revision",
         content: "Learn DOM manipulation and Local Storage.",
         category: "Study"
+    },
+    {
+        id: 3, 
+        title: "T-Shirt Business",
+        content: " Design and launch a new t-shirt line.",
+        category: "Business"
     }
 ];
 
