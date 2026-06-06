@@ -1,23 +1,4 @@
-let notes = JSON.parse(localStorage.getItem("notes")) || [
-    {
-        id: 1,
-        title: "Project Phoenix",
-        content: "Build Smart Notes App using JavaScript.",
-        category: "Projects"
-    },
-    {
-        id: 2,
-        title: "JavaScript Revision",
-        content: "Learn DOM manipulation and Local Storage.",
-        category: "Study"
-    },
-    {
-        id: 3, 
-        title: "T-Shirt Business",
-        content: " Design and launch a new t-shirt line.",
-        category: "Business"
-    }
-];
+let notes = JSON.parse(localStorage.getItem("notes")) || [];
 
 const notesGrid = document.getElementById("notesGrid");
 const addNoteBtn = document.getElementById("addNoteBtn");
@@ -56,11 +37,12 @@ saveNoteBtn.addEventListener("click", () => {
     }
 
     const newNote = {
-        id : notes.length +1,
+        id : Date.now(),
         title: noteTitle.value,
         content: noteContent.value,
         category: noteCategory.value,
-        createdAt: Date.now()
+        createdAt: Date.now(),
+        pinned: false
     };
     notes.push(newNote);
     saveToLocalStorage();
@@ -81,23 +63,34 @@ sortSelect.addEventListener("change", () => {
             return (a.createdAt || 0) - (b.createdAt || 0);
         })
     }
+    saveToLocalStorage();
     renderNotes();
 })
 
 function renderNotes(notesToRender = notes){
     notesGrid.innerHTML = "";
+    notesToRender.sort((a, b) => {
+        return Number(b.pinned) - Number(a.pinned);
+    });
     notesToRender.forEach(note => {
         const noteCard = document.createElement("div");
         noteCard.classList.add("note-card");
         const title = document.createElement("h3");
-        title.textContent = note.title;
+        title.textContent = note.pinned ? `📌 ${note.title}` : note.title;
         const content = document.createElement("p");
         content.textContent = note.content;
         const category = document.createElement("span");
         category.textContent = note.category;
         const deleteBtn = document.createElement("button");
         deleteBtn.textContent = "🗑️ Delete";
+        const pinBtn = document.createElement("button");
+        pinBtn.textContent = note.pinned ? "📌 Unpin" : "📍 Pin";
 
+        pinBtn.addEventListener("click", () => {
+            note.pinned = !note.pinned;
+            saveToLocalStorage();
+            renderNotes();
+        });
         deleteBtn.addEventListener("click", () => {
             notes = notes.filter(currentNote => {
                 return currentNote.id !== note.id;
@@ -110,6 +103,7 @@ function renderNotes(notesToRender = notes){
         noteCard.appendChild(content);
         noteCard.appendChild(category);
         noteCard.appendChild(deleteBtn);
+        noteCard.appendChild(pinBtn);
         notesGrid.appendChild(noteCard);
     });
 }
