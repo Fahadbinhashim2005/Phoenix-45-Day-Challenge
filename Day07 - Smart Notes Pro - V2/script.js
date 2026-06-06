@@ -1,4 +1,4 @@
-let notes = [
+let notes = JSON.parse(localStorage.getItem("notes")) || [
     {
         id: 1,
         title: "Project Phoenix",
@@ -27,7 +27,19 @@ const noteTitle = document.getElementById("noteTitle");
 const noteContent = document.getElementById("noteContent");
 const noteCategory = document.getElementById("noteCategory");
 const saveNoteBtn = document.getElementById("saveNoteBtn");
+const searchInput = document.getElementById("searchInput");
+const sortSelect = document.getElementById("sortSelect");
 
+searchInput.addEventListener("input", () => {
+    const searchTerm = searchInput.value.toLowerCase();
+    const filteredNotes = notes.filter(note => {
+        return(
+            note.title.toLowerCase().includes(searchTerm) ||
+            note.content.toLowerCase().includes(searchTerm)
+        );
+    });
+    renderNotes(filteredNotes);
+});
 addNoteBtn.addEventListener("click", () => {
     noteModal.classList.remove("hidden");
 });
@@ -47,10 +59,11 @@ saveNoteBtn.addEventListener("click", () => {
         id : notes.length +1,
         title: noteTitle.value,
         content: noteContent.value,
-        category: noteCategory.value
+        category: noteCategory.value,
+        createdAt: Date.now()
     };
-    console.log(newNote);
     notes.push(newNote);
+    saveToLocalStorage();
     renderNotes();
 
     noteModal.classList.add("hidden");
@@ -58,10 +71,22 @@ saveNoteBtn.addEventListener("click", () => {
     noteContent.value = "";
     noteCategory.value = "Projects";
 });
+sortSelect.addEventListener("change", () => {
+    if(sortSelect.value === "newest"){
+        notes.sort((a,b) => {
+            return (b.createdAt || 0) - (a.createdAt || 0);
+        });
+    }else{
+        notes.sort((a,b) => {
+            return (a.createdAt || 0) - (b.createdAt || 0);
+        })
+    }
+    renderNotes();
+})
 
-function renderNotes(){
+function renderNotes(notesToRender = notes){
     notesGrid.innerHTML = "";
-    notes.forEach(note => {
+    notesToRender.forEach(note => {
         const noteCard = document.createElement("div");
         noteCard.classList.add("note-card");
         const title = document.createElement("h3");
@@ -77,6 +102,7 @@ function renderNotes(){
             notes = notes.filter(currentNote => {
                 return currentNote.id !== note.id;
             });
+            saveToLocalStorage();
             renderNotes();
         });
 
@@ -86,6 +112,13 @@ function renderNotes(){
         noteCard.appendChild(deleteBtn);
         notesGrid.appendChild(noteCard);
     });
+}
+
+function saveToLocalStorage() {
+    localStorage.setItem(
+        "notes",
+        JSON.stringify(notes)
+    )
 }
 
 renderNotes();
