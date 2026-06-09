@@ -12,6 +12,7 @@ const saveNoteBtn = document.getElementById("saveNoteBtn");
 const searchInput = document.getElementById("searchInput");
 const sortSelect = document.getElementById("sortSelect");
 const modalTitle = document.getElementById("modalTitle");
+const filterButtons = document.querySelectorAll(".filter-btn");
 
 searchInput.addEventListener("input", () => {
     const searchTerm = searchInput.value.toLowerCase();
@@ -81,26 +82,65 @@ sortSelect.addEventListener("change", () => {
     saveToLocalStorage();
     renderNotes();
 })
+filterButtons.forEach(button => {
+    button.addEventListener("click", () =>{
+        filterButtons.forEach(btn => {
+            btn.classList.remove("active");
+        });
+        button.classList.add("active");
+        const category = button.dataset.category;
+        if(category === "All"){
+            renderNotes();
+            return;
+        }
+        const filteredNotes = notes.filter(note => {
+            return note.category === category;
+        });
+        renderNotes(filteredNotes);
+    });
+});
 
 function renderNotes(notesToRender = notes){
     notesGrid.innerHTML = "";
+    if (notesToRender.length === 0) {
+        notesGrid.innerHTML = `
+            <div class="empty-state">
+                <h2>📝 No Notes Found</h2>
+                <p>Create a new note to get started.</p>
+            </div>
+        `;
+        return;
+    }
     notesToRender.sort((a, b) => {
         return Number(b.pinned) - Number(a.pinned);
     });
     notesToRender.forEach(note => {
         const noteCard = document.createElement("div");
         noteCard.classList.add("note-card");
+        noteCard.classList.add(
+            note.category.toLowerCase()
+        );
         const title = document.createElement("h3");
-        title.textContent = note.pinned ? `📌 ${note.title}` : note.title;
+        if(note.pinned){
+            title.textContent = `📌 ${note.title}`;
+            title.style.cursor = "pointer";
+            title.addEventListener("click", () => {
+                note.pinned = false;
+                saveToLocalStorage();
+                renderNotes();
+            });
+        }
+        else{
+            title.textContent = note.title;
+        }
         const content = document.createElement("p");
         content.textContent = note.content;
-        const category = document.createElement("span");
-        category.textContent = note.category;
         const deleteBtn = document.createElement("button");
         deleteBtn.textContent = "🗑️";
         deleteBtn.classList.add("delete-btn");
         const pinBtn = document.createElement("button");
         pinBtn.textContent = note.pinned ? "📌" : "📍";
+        pinBtn.title = note.pinned ? "Unpin Note" : "Pin Note";
         pinBtn.classList.add("pin-btn");
         const editBtn = document.createElement("button");
         editBtn.textContent = "✏️";
@@ -134,9 +174,8 @@ function renderNotes(notesToRender = notes){
 
         noteCard.appendChild(title);
         noteCard.appendChild(content);
-        noteCard.appendChild(category);
         if (!note.pinned) {
-            noteCard.appendChild(pinBtn);
+        noteCard.appendChild(pinBtn);
         }
         noteCard.appendChild(actionsDiv);
         notesGrid.appendChild(noteCard);
