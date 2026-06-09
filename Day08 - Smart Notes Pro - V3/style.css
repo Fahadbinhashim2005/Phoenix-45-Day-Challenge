@@ -221,6 +221,12 @@ body{
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
+mark{
+    background: #fde68a;
+    color: inherit;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
 
 .modal {
     position:fixed;

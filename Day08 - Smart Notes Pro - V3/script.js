@@ -100,8 +100,23 @@ filterButtons.forEach(button => {
     });
 });
 
+function highlightText(text, searchTerm){
+    if(!searchTerm){
+        return text;
+    }
+    const regex = new RegExp(
+        `(${searchTerm})`,
+        "gi"
+    );
+    return text.replace(
+        regex,
+        "<mark>$1</mark>"
+    );
+}
+
 function renderNotes(notesToRender = notes){
     notesGrid.innerHTML = "";
+    const searchTerm = searchInput.value.trim();
     if (notesToRender.length === 0) {
         notesGrid.innerHTML = `
             <div class="empty-state">
@@ -122,7 +137,7 @@ function renderNotes(notesToRender = notes){
         );
         const title = document.createElement("h3");
         if(note.pinned){
-            title.textContent = `📌 ${note.title}`;
+            title.innerHTML =`📌 ${highlightText(note.title,searchTerm)}`;
             title.style.cursor = "pointer";
             title.addEventListener("click", () => {
                 note.pinned = false;
@@ -131,10 +146,10 @@ function renderNotes(notesToRender = notes){
             });
         }
         else{
-            title.textContent = note.title;
+            title.innerHTML =highlightText(note.title,searchTerm);
         }
         const content = document.createElement("p");
-        content.textContent = note.content;
+        content.innerHTML = highlightText(note.content,searchTerm);
         const deleteBtn = document.createElement("button");
         deleteBtn.textContent = "🗑️";
         deleteBtn.classList.add("delete-btn");
