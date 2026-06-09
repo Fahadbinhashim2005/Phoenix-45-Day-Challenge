@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Notes Pro</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="logo">
+            <h1>Smart Notes Pro</h1>
+            <p>Your Ideas, Organized</p>
+        </div>
+
+        <nav class="nav-links">
+            <ul>
+                <button class="nav-btn active">🏠 Overview</button>
+                <button class="nav-btn">📝 All Notes</button>
+                <button class="nav-btn">📌 Pinned Notes</button>
+                <button class="nav-btn">🏷️ Tags</button>
+                <button class="nav-btn">😊 Moods</button>
+                <button class="nav-btn">🗑️ Trash</button>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-bar">
+            <input type="text" id="searchInput" placeholder="Search notes...">
+
+            <select id="sortSelect">
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+            </select>
+
+            <button id="themeBtn">🌙</button>
+            <button id="addNoteBtn"> + Add Note </button>
+        </header>
+
+        <section class="notes-container">
+            <div id="notesGrid">
+
+            </div>
+        </section>
+
+    </main>
+
+    <div class="modal hidden" id="noteModal">
+        <div class="modal-content">
+            <h2 id="modalTitle">New Note</h2>
+            <button id="closeModalBtn">✕</button>
+            <input type="text" id="noteTitle" placeholder="Title">
+            <textarea id="noteContent" placeholder="Your note..."></textarea>
+
+            <select id="noteCategory">
+                <option>Projects</option>
+                <option>Study</option>
+                <option>Personal</option>
+                <option>Ideas</option>
+            </select>
+
+            <button id="saveNoteBtn">Save Note</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
