@@ -20,6 +20,11 @@ const sortSelect = document.getElementById("sortSelect");
 const modalTitle = document.getElementById("modalTitle");
 const filterButtons = document.querySelectorAll(".filter-btn");
 const trashBtn = document.getElementById("trashBtn");
+const allCount = document.getElementById("allCount");
+const projectsCount = document.getElementById("projectsCount");
+const studyCount = document.getElementById("studyCount");
+const personalCount = document.getElementById("personalCount");
+const ideasCount = document.getElementById("ideasCount");
 
 searchInput.addEventListener("input", () => {
     const searchTerm = searchInput.value.toLowerCase();
@@ -133,8 +138,24 @@ function highlightText(text, searchTerm){
         "<mark>$1</mark>"
     );
 }
+function updateStats() {
+    allCount.textContent = notes.filter(note => !note.deleted).length;
+    projectsCount.textContent = notes.filter(note =>
+        note.category === "Projects" && !note.deleted
+    ).length;
+    studyCount.textContent = notes.filter(note =>
+        note.category === "Study" && !note.deleted
+    ).length;
+    personalCount.textContent = notes.filter(note =>
+        note.category === "Personal" && !note.deleted
+    ).length;
+    ideasCount.textContent = notes.filter(note =>
+        note.category === "Ideas" && !note.deleted
+    ).length;
+}
 
 function renderNotes(notesToRender = notes){
+    updateStats();
     notesGrid.innerHTML = "";
     if (currentView !== "trash") {
         notesToRender = notesToRender.filter(note => {
