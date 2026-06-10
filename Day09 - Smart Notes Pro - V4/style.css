@@ -226,6 +226,13 @@ body{
     border-radius: 8px;
     cursor: pointer;
 }
+.note-date {
+    display: block;
+    color: #9ca3af;
+    font-size: 12px;
+    margin-top: 8px;
+    font-weight: 500;
+}
 .pin-btn {
     position: absolute;
     top: 15px;

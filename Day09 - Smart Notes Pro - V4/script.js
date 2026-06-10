@@ -154,6 +154,24 @@ function updateStats() {
     ).length;
 }
 
+function formatDate(timestamp) {
+    const date = new Date(timestamp);
+    const today = new Date();
+    if (date.toDateString() === today.toDateString()) {
+        return "Today";
+    }
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+    if (date.toDateString() === yesterday.toDateString()) {
+        return "Yesterday";
+    }
+    return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+    });
+}
+
 function renderNotes(notesToRender = notes){
     updateStats();
     notesGrid.innerHTML = "";
@@ -196,6 +214,11 @@ function renderNotes(notesToRender = notes){
         }
         const content = document.createElement("p");
         content.innerHTML = highlightText(note.content,searchTerm);
+        const timestamp = document.createElement("small");
+        timestamp.textContent = formatDate(
+            note.createdAt || Date.now()
+        );
+        timestamp.classList.add("note-date");
         const deleteBtn = document.createElement("button");
         deleteBtn.textContent = "🗑️";
         deleteBtn.classList.add("delete-btn");
@@ -258,6 +281,7 @@ function renderNotes(notesToRender = notes){
         });
         noteCard.appendChild(title);
         noteCard.appendChild(content);
+        noteCard.appendChild(timestamp);
         if (!note.pinned && currentView !== "trash") {
         noteCard.appendChild(pinBtn);
     }
