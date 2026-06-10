@@ -1,0 +1,356 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    font-family: Arial, sans-serif;
+    background-color: #f5f7fb;
+    display:flex;
+    min-height: 100vh;
+}
+
+.sidebar{
+    width: 280px;
+    background: linear-gradient(180deg, #6d5dfc, #4f46e5);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding:24px;
+}
+
+.logo h1{
+    font-size: 28px;
+    margin-bottom: 8px;
+}
+.logo p{
+    opacity: 0.8;
+    font-size: 14px;
+}
+
+.nav-links {
+    display:flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.nav-btn {
+    border: none;
+    background: transparent;
+    color: white;
+    text-align: left;
+    padding: 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 15px;
+
+}
+.nav-btn:hover {
+    background: rgba(255,255,255,0.15)
+}
+.nav-btn.active{
+    background: white;
+    color: #4f46e5;
+    font-weight: bold;
+}
+
+.main-content {
+    flex: 1;
+    padding: 30px;
+}
+
+.filter-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+.filter-btn {
+    padding: 10px 10px;
+    border:none;
+    border-radius: 999px;
+    background: #eef2ff;
+    color: #4f46e5;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 16px;
+    transition: 0.2s;
+}
+.filter-btn.all{
+    background: #f3f4f6;
+    color: #374151;
+}
+.filter-btn.projects{
+    background: #dbeafe;
+    color: #2563eb;
+}
+.filter-btn.study{
+    background: #dcfce7;
+    color: #16a34a;
+}
+.filter-btn.personal{
+    background: #fce7f3;
+    color: #db2777;
+}
+.filter-btn.ideas{
+    background: #fef9c3;
+    color: #ca8a04;
+}
+.filter-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+}
+.filter-btn.active {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.trash-btn {
+    margin-left: auto;
+    width: 42px;
+    height: 42px;
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+    background: #fef2f2;
+    color: #dc2626;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: 0.2s;
+}
+.trash-btn:hover {
+    background: #fee2e2;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(220, 38, 38, 0.2);
+}
+
+.restore-btn {
+    width: 42px;
+    height: 42px;
+    border: 1px solid #d1fae5;
+    border-radius: 12px;
+    background: #ecfdf5;
+    color: #10b981;
+    cursor: pointer;
+    font-size: 18px;
+    transition: 0.2s;
+}
+.restore-btn:hover {
+    background: #d1fae5;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.2);
+}
+
+.note-card.projects{
+    background: #eff6ff;
+    border-left: 6px solid #3b82f6;
+}
+.note-card.study{
+    background: #ecfdf5;
+    border-left: 6px solid #22c55e;
+}
+.note-card.personal{
+    background: #fdf2f8;
+    border-left: 6px solid #ec4899;
+}
+.note-card.ideas{
+    background: #fefce8;
+    border-left: 6px solid #eab308;
+}
+
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 80px 20px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.empty-state h2 {
+    margin-bottom: 10px;
+    color: #333;
+}
+.empty-state p {
+    color: #777;
+}
+
+.top-bar {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.note-card {
+    background: white;
+    position: relative;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: 0.3s;
+}
+.note-card:hover {
+    transform: translateY(-4px);
+}
+.note-card h3 {
+    display: inline-block;
+    user-select: none;
+    color: #222;
+    font-size: 20px;
+}
+.note-card h3:hover{
+    opacity: 0.8;
+}
+.note-card p {
+    color: #666;
+    line-height: 1.5;
+}
+.note-card span {
+    width: fit-content;
+    background: #eef2ff;
+    color: #4f46e5;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+}
+.note-card button {
+    padding: 8px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.pin-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    border: none;
+    background: transparent;
+    cursor:pointer;
+    font-size:20px;
+}
+.card-actions {
+    margin-top: 15px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+.edit-btn,
+.delete-btn {
+    width: 42px;
+    height: 42px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.8);
+    cursor: pointer;
+    font-size: 18px;
+    transition: 0.2s;
+}
+.delete-btn {
+    background: #ffdcdc;
+    border: 3px solid #ff0000;
+}
+.edit-btn {
+    background: rgb(255, 255, 163);
+    border: 3px solid #ffa200;
+}
+.edit-btn:hover,
+.delete-btn:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+mark{
+    background: #fde68a;
+    color: inherit;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+.modal {
+    position:fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.modal-content {
+    background : white;
+    width: 500px;
+    max-width: 90%;
+    padding: 24px;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    position: relative;
+}
+.modal-content input,
+.modal-content textarea,
+.modal-content select {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    font-size: 15px;
+}
+.modal-content textarea {
+    min-height: 120px;
+    resize: none;
+}
+
+
+#searchInput {
+    flex: 1; 
+    padding: 14px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    font-size: 15px;
+}
+
+#sortSelect,
+#themeBtn,
+#addNoteBtn {
+    padding: 14px 18px;
+    border: none;
+    border-radius: 12px;
+    cursor:pointer;
+}
+
+#addNoteBtn {
+    background: #4f46e5;
+    color:white;
+}
+
+#notesGrid {
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap:20px;
+}
+
+#saveNoteBtn {
+    background: #4f46e5;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+#closeModalBtn {
+    position :absolute;
+    top:15px;
+    right: 15px;
+    border: none;
+    background: transparent;
+    font-size: 18px;
+    cursor: pointer;
+}
