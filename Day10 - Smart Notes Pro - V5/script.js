@@ -15,6 +15,7 @@ notes = notes.map(note => ({
 
 let editingNoteId = null;
 let currentView = "all";
+let selectedImage = "";
 
 const notesGrid = document.getElementById("notesGrid");
 const addNoteBtn = document.getElementById("addNoteBtn");
@@ -23,6 +24,7 @@ const closeModalBtn = document.getElementById("closeModalBtn");
 const noteTitle = document.getElementById("noteTitle");
 const noteContent = document.getElementById("noteContent");
 const noteCategory = document.getElementById("noteCategory");
+const noteImage = document.getElementById("noteImage");
 const saveNoteBtn = document.getElementById("saveNoteBtn");
 const searchInput = document.getElementById("searchInput");
 const sortSelect = document.getElementById("sortSelect");
@@ -44,10 +46,6 @@ const downloadJsonBtn = document.getElementById("downloadJsonBtn");
 
 const savedTheme = localStorage.getItem("theme");
 
-summary.classList.add("ai-summary");
-tags.classList.add("ai-tags");
-mood.classList.add("ai-mood");
-
 if (savedTheme === "dark") {
     document.body.classList.add("dark-theme");
 }
@@ -67,8 +65,26 @@ addNoteBtn.addEventListener("click", () => {
     modalTitle.textContent = "New Note";
     noteTitle.value = "";
     noteContent.value = "";
+    selectedImage = "";
+    noteImage.value = "";
     noteCategory.value = "Projects";
     noteModal.classList.remove("hidden");
+});
+noteImage.addEventListener("change", () => {
+    const file = noteImage.files[0];
+
+    if (!file) {
+        selectedImage = "";
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+        selectedImage = e.target.result;
+    };
+
+    reader.readAsDataURL(file);
 });
 
 closeModalBtn.addEventListener("click", () => {
@@ -87,6 +103,7 @@ searchInput.addEventListener("input", () => {
     const searchTerm = searchInput.value.toLowerCase();
 
     const filtered = notes.filter(note =>
+        !note.deleted &&
         note.title.toLowerCase().includes(searchTerm) ||
         note.content.toLowerCase().includes(searchTerm)
     );
@@ -153,6 +170,7 @@ saveNoteBtn.addEventListener("click", () => {
         noteToEdit.title = noteTitle.value;
         noteToEdit.content = noteContent.value;
         noteToEdit.category = noteCategory.value;
+        noteToEdit.image = selectedImage;
 
         noteToEdit.summary = generateSummary(
             noteContent.value
@@ -179,6 +197,7 @@ saveNoteBtn.addEventListener("click", () => {
             createdAt: Date.now(),
             pinned: false,
             deleted: false,
+            image: selectedImage,
             summary: generateSummary(noteContent.value),
             tags: generateTags(
                 noteTitle.value,
@@ -197,6 +216,8 @@ saveNoteBtn.addEventListener("click", () => {
     noteTitle.value = "";
     noteContent.value = "";
     noteCategory.value = "Projects";
+    selectedImage = "";
+    noteImage.value = "";
 });
 
 downloadJsonBtn.addEventListener("click", () => {
@@ -290,6 +311,12 @@ function renderNotes(notesToRender = notes) {
             "note-card",
             note.category.toLowerCase()
         );
+        if (note.image) {
+            const img = document.createElement("img");
+            img.src = note.image;
+            img.classList.add("note-image");
+            noteCard.appendChild(img);
+        }
 
         const title = document.createElement("h3");
 
@@ -334,6 +361,10 @@ function renderNotes(notesToRender = notes) {
         mood.textContent =
             "😊 " + (note.mood || "😌 Normal");
 
+            const summary = document.createElement("small");
+            const tags = document.createElement("small");
+            const mood = document.createElement("small");
+
         const timestamp = document.createElement("small");
         timestamp.classList.add("note-date");
         timestamp.textContent = formatDate(
@@ -361,6 +392,7 @@ function renderNotes(notesToRender = notes) {
             noteTitle.value = note.title;
             noteContent.value = note.content;
             noteCategory.value = note.category;
+            selectedImage = note.image || "";
 
             modalTitle.textContent = "Edit Note";
 
