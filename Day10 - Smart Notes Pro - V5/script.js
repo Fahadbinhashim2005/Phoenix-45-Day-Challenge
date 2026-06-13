@@ -44,6 +44,10 @@ const downloadJsonBtn = document.getElementById("downloadJsonBtn");
 
 const savedTheme = localStorage.getItem("theme");
 
+summary.classList.add("ai-summary");
+tags.classList.add("ai-tags");
+mood.classList.add("ai-mood");
+
 if (savedTheme === "dark") {
     document.body.classList.add("dark-theme");
 }
@@ -247,6 +251,16 @@ downloadTxtBtn.addEventListener("click", () => {
 
     downloadModal.classList.add("hidden");
 });
+function parseMarkdown(text) {
+    return text
+        .replace(/^### (.*$)/gim, "<h3>$1</h3>")
+        .replace(/^## (.*$)/gim, "<h2>$1</h2>")
+        .replace(/^# (.*$)/gim, "<h1>$1</h1>")
+        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+        .replace(/\*(.*?)\*/g, "<em>$1</em>")
+        .replace(/`(.*?)`/g, "<code>$1</code>")
+        .replace(/\n/g, "<br>");
+}
 
 function renderNotes(notesToRender = notes) {
     updateStats();
@@ -301,9 +315,11 @@ function renderNotes(notesToRender = notes) {
         }
 
         const content = document.createElement("p");
-        content.innerHTML = highlightText(
-            note.content,
-            searchTerm
+        content.innerHTML = parseMarkdown(
+            highlightText(
+                note.content,
+                searchTerm
+            )
         );
 
         const summary = document.createElement("small");
