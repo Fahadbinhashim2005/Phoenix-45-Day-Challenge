@@ -44,6 +44,7 @@
             <button class="filter-btn study" data-category="Study">Study <span id="studyCount">0</span></button>
             <button class="filter-btn personal" data-category="Personal">Personal <span id="personalCount">0</span></button>
             <button class="filter-btn ideas" data-category="Ideas">Ideas <span id="ideasCount">0</span></button>
+            <button id="downloadBtn" class="download-btn">⬇️</button>
             <button id="trashBtn" class="trash-btn">🗑️</button>
         </section>
 
@@ -52,7 +53,6 @@
 
             </div>
         </section>
-
     </main>
 
     <div class="modal hidden" id="noteModal">
@@ -72,6 +72,19 @@
             <button id="saveNoteBtn">Save Note</button>
         </div>
     </div>
+    <div id="downloadModal" class="modal hidden">
+    <div class="modal-content">
+        <button id="closeDownloadModalBtn">✖</button>
+        <h2>Download Notes</h2>
+        <p>Select the format:</p>
+        <button id="downloadTxtBtn" class="download-option">
+            📄 Download as TXT
+        </button>
+        <button id="downloadJsonBtn" class="download-option">
+            📦 Download as JSON
+        </button>
+    </div>
+</div>
 
     <script src="script.js"></script>
 </body>

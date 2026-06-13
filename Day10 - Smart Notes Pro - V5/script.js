@@ -1,6 +1,8 @@
 let notes = JSON.parse(localStorage.getItem("notes")) || [];
+
 notes = notes.map(note => ({
-    deleted: false,
+    deleted: note.deleted ?? false,
+    pinned: note.pinned ?? false,
     summary: note.summary || generateSummary(note.content || ""),
     tags: note.tags || generateTags(
         note.title || "",
@@ -33,30 +35,35 @@ const studyCount = document.getElementById("studyCount");
 const personalCount = document.getElementById("personalCount");
 const ideasCount = document.getElementById("ideasCount");
 const themeBtn = document.getElementById("themeBtn");
+
+const downloadBtn = document.getElementById("downloadBtn");
+const downloadModal = document.getElementById("downloadModal");
+const closeDownloadModalBtn = document.getElementById("closeDownloadModalBtn");
+const downloadTxtBtn = document.getElementById("downloadTxtBtn");
+const downloadJsonBtn = document.getElementById("downloadJsonBtn");
+
 const savedTheme = localStorage.getItem("theme");
 
 if (savedTheme === "dark") {
     document.body.classList.add("dark-theme");
 }
 
-searchInput.addEventListener("input", () => {
-    const searchTerm = searchInput.value.toLowerCase();
-    const filteredNotes = notes.filter(note => {
-        return(
-            note.title.toLowerCase().includes(searchTerm) ||
-            note.content.toLowerCase().includes(searchTerm)
-        );
-    });
-    renderNotes(filteredNotes);
-});
-
 themeBtn.addEventListener("click", () => {
     document.body.classList.toggle("dark-theme");
-
-    const isDark = document.body.classList.contains("dark-theme");
-    localStorage.setItem("theme", isDark ? "dark" : "light");
+    localStorage.setItem(
+        "theme",
+        document.body.classList.contains("dark-theme")
+            ? "dark"
+            : "light"
+    );
 });
+
 addNoteBtn.addEventListener("click", () => {
+    editingNoteId = null;
+    modalTitle.textContent = "New Note";
+    noteTitle.value = "";
+    noteContent.value = "";
+    noteCategory.value = "Projects";
     noteModal.classList.remove("hidden");
 });
 
@@ -64,27 +71,103 @@ closeModalBtn.addEventListener("click", () => {
     noteModal.classList.add("hidden");
 });
 
+downloadBtn.addEventListener("click", () => {
+    downloadModal.classList.remove("hidden");
+});
+
+closeDownloadModalBtn.addEventListener("click", () => {
+    downloadModal.classList.add("hidden");
+});
+
+searchInput.addEventListener("input", () => {
+    const searchTerm = searchInput.value.toLowerCase();
+
+    const filtered = notes.filter(note =>
+        note.title.toLowerCase().includes(searchTerm) ||
+        note.content.toLowerCase().includes(searchTerm)
+    );
+
+    renderNotes(filtered);
+});
+
+sortSelect.addEventListener("change", () => {
+    if (sortSelect.value === "newest") {
+        notes.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    } else {
+        notes.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+    }
+
+    saveToLocalStorage();
+    renderNotes();
+});
+
+filterButtons.forEach(button => {
+    button.addEventListener("click", () => {
+        filterButtons.forEach(btn =>
+            btn.classList.remove("active")
+        );
+
+        button.classList.add("active");
+
+        const category = button.dataset.category;
+
+        if (category === "All") {
+            currentView = "all";
+            renderNotes();
+            return;
+        }
+
+        renderNotes(
+            notes.filter(note =>
+                note.category === category
+            )
+        );
+    });
+});
+
+trashBtn.addEventListener("click", () => {
+    currentView = "trash";
+    renderNotes(
+        notes.filter(note => note.deleted)
+    );
+});
+
 saveNoteBtn.addEventListener("click", () => {
-    if(
+    if (
         noteTitle.value.trim() === "" ||
         noteContent.value.trim() === ""
-    ){
+    ) {
         alert("Please fill in all details");
         return;
     }
 
     if (editingNoteId !== null) {
-        const noteToEdit = notes.find(note => {
-            return note.id === editingNoteId;
-        });
-        editingNoteId = null;
-        modalTitle.textContent = "New note";
+        const noteToEdit = notes.find(
+            note => note.id === editingNoteId
+        );
+
         noteToEdit.title = noteTitle.value;
         noteToEdit.content = noteContent.value;
         noteToEdit.category = noteCategory.value;
-    }
-    else{
-        const newNote = {
+
+        noteToEdit.summary = generateSummary(
+            noteContent.value
+        );
+
+        noteToEdit.tags = generateTags(
+            noteTitle.value,
+            noteContent.value,
+            noteCategory.value
+        );
+
+        noteToEdit.mood = detectMood(
+            noteContent.value
+        );
+
+        editingNoteId = null;
+        modalTitle.textContent = "New Note";
+    } else {
+        notes.push({
             id: Date.now(),
             title: noteTitle.value,
             content: noteContent.value,
@@ -99,114 +182,82 @@ saveNoteBtn.addEventListener("click", () => {
                 noteCategory.value
             ),
             mood: detectMood(noteContent.value)
-        };
-        notes.push(newNote);
+        });
     }
+
     saveToLocalStorage();
     renderNotes();
 
     noteModal.classList.add("hidden");
+
     noteTitle.value = "";
     noteContent.value = "";
     noteCategory.value = "Projects";
 });
 
-sortSelect.addEventListener("change", () => {
-    if(sortSelect.value === "newest"){
-        notes.sort((a,b) => {
-            return (b.createdAt || 0) - (a.createdAt || 0);
-        });
-    }else{
-        notes.sort((a,b) => {
-            return (a.createdAt || 0) - (b.createdAt || 0);
-        })
-    }
-    saveToLocalStorage();
-    renderNotes();
-})
-
-filterButtons.forEach(button => {
-    button.addEventListener("click", () =>{
-        filterButtons.forEach(btn => {
-            btn.classList.remove("active");
-        });
-        button.classList.add("active");
-        const category = button.dataset.category;
-        if(category === "All"){
-            currentView = "all";
-            renderNotes();
-            return;
+downloadJsonBtn.addEventListener("click", () => {
+    const blob = new Blob(
+        [JSON.stringify(notes, null, 2)],
+        {
+            type: "application/json"
         }
-        const filteredNotes = notes.filter(note => {
-            return note.category === category;
-        });
-        renderNotes(filteredNotes);
-    });
-});
-trashBtn.addEventListener("click", () => {
-    currentView = "trash";
-    const trashedNotes = notes.filter(note => {
-        return note.deleted;
-    });
-    renderNotes(trashedNotes);
-});
-
-function highlightText(text, searchTerm){
-    if(!searchTerm){
-        return text;
-    }
-    const regex = new RegExp(
-        `(${searchTerm})`,
-        "gi"
     );
-    return text.replace(
-        regex,
-        "<mark>$1</mark>"
-    );
-}
-function updateStats() {
-    allCount.textContent = notes.filter(note => !note.deleted).length;
-    projectsCount.textContent = notes.filter(note =>
-        note.category === "Projects" && !note.deleted
-    ).length;
-    studyCount.textContent = notes.filter(note =>
-        note.category === "Study" && !note.deleted
-    ).length;
-    personalCount.textContent = notes.filter(note =>
-        note.category === "Personal" && !note.deleted
-    ).length;
-    ideasCount.textContent = notes.filter(note =>
-        note.category === "Ideas" && !note.deleted
-    ).length;
-}
 
-function formatDate(timestamp) {
-    const date = new Date(timestamp);
-    const today = new Date();
-    if (date.toDateString() === today.toDateString()) {
-        return "Today";
-    }
-    const yesterday = new Date();
-    yesterday.setDate(today.getDate() - 1);
-    if (date.toDateString() === yesterday.toDateString()) {
-        return "Yesterday";
-    }
-    return date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric"
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "smart-notes.json";
+    a.click();
+
+    URL.revokeObjectURL(url);
+
+    downloadModal.classList.add("hidden");
+});
+
+downloadTxtBtn.addEventListener("click", () => {
+    let text = "";
+
+    notes.forEach(note => {
+        text += `Title: ${note.title}\n`;
+        text += `Category: ${note.category}\n`;
+        text += `Summary: ${note.summary}\n`;
+        text += `Mood: ${note.mood}\n`;
+        text += `Tags: ${(note.tags || []).join(", ")}\n`;
+        text += `Created: ${formatDate(note.createdAt)}\n`;
+        text += `Content:\n${note.content}\n`;
+        text += "\n----------------------------------------\n\n";
     });
-}
 
-function renderNotes(notesToRender = notes){
+    const blob = new Blob(
+        [text],
+        {
+            type: "text/plain"
+        }
+    );
+
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "smart-notes.txt";
+    a.click();
+
+    URL.revokeObjectURL(url);
+
+    downloadModal.classList.add("hidden");
+});
+
+function renderNotes(notesToRender = notes) {
     updateStats();
     notesGrid.innerHTML = "";
+
     if (currentView !== "trash") {
-        notesToRender = notesToRender.filter(note => {
-            return !note.deleted;
-        });
+        notesToRender = notesToRender.filter(note => !note.deleted);
     }
+
     const searchTerm = searchInput.value.trim();
+
     if (notesToRender.length === 0) {
         notesGrid.innerHTML = `
             <div class="empty-state">
@@ -216,133 +267,304 @@ function renderNotes(notesToRender = notes){
         `;
         return;
     }
-    notesToRender.sort((a, b) => {
-        return Number(b.pinned) - Number(a.pinned);
-    });
+
+    notesToRender.sort((a, b) => Number(b.pinned) - Number(a.pinned));
+
     notesToRender.forEach(note => {
         const noteCard = document.createElement("div");
-        noteCard.classList.add("note-card");
         noteCard.classList.add(
+            "note-card",
             note.category.toLowerCase()
         );
+
         const title = document.createElement("h3");
-        if(note.pinned){
-            title.innerHTML =`📌 ${highlightText(note.title,searchTerm)}`;
+
+        if (note.pinned) {
+            title.innerHTML = `📌 ${highlightText(
+                note.title,
+                searchTerm
+            )}`;
+
             title.style.cursor = "pointer";
+
             title.addEventListener("click", () => {
                 note.pinned = false;
                 saveToLocalStorage();
                 renderNotes();
             });
+
+        } else {
+            title.innerHTML = highlightText(
+                note.title,
+                searchTerm
+            );
         }
-        else{
-            title.innerHTML =highlightText(note.title,searchTerm);
-        }
+
         const content = document.createElement("p");
-        content.innerHTML = highlightText(note.content,searchTerm);
+        content.innerHTML = highlightText(
+            note.content,
+            searchTerm
+        );
+
         const summary = document.createElement("small");
-        summary.textContent = "📝 " + note.summary;
+        summary.textContent =
+            "📝 " + (note.summary || "");
 
         const tags = document.createElement("small");
-        tags.textContent = "🏷️ " + (note.tags || []).join(", ");
+        tags.textContent =
+            "🏷️ " + (note.tags || []).join(", ");
 
         const mood = document.createElement("small");
-        mood.textContent = "😊 " + (note.mood || "😌 Normal");
+        mood.textContent =
+            "😊 " + (note.mood || "😌 Normal");
+
         const timestamp = document.createElement("small");
+        timestamp.classList.add("note-date");
         timestamp.textContent = formatDate(
             note.createdAt || Date.now()
         );
-        timestamp.classList.add("note-date");
-        const deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "🗑️";
-        deleteBtn.classList.add("delete-btn");
+
         const pinBtn = document.createElement("button");
-        pinBtn.textContent = note.pinned ? "📌" : "📍";
-        pinBtn.title = note.pinned ? "Unpin Note" : "Pin Note";
         pinBtn.classList.add("pin-btn");
-        const editBtn = document.createElement("button");
-        editBtn.textContent = "✏️";
-        editBtn.classList.add("edit-btn");
-        const restoreBtn = document.createElement("button");
-        restoreBtn.textContent = "♻️";
-        restoreBtn.classList.add("restore-btn");
-        const actionsDiv = document.createElement("div");
-        actionsDiv.classList.add("card-actions");
-        if (currentView === "trash") {
-            actionsDiv.appendChild(restoreBtn);
-            actionsDiv.appendChild(deleteBtn);
-        } else {
-            actionsDiv.appendChild(editBtn);
-            actionsDiv.appendChild(deleteBtn);
-        }
+        pinBtn.textContent = note.pinned ? "📌" : "📍";
+
         pinBtn.addEventListener("click", () => {
             note.pinned = !note.pinned;
             saveToLocalStorage();
             renderNotes();
+        });
 
-        });
-        deleteBtn.addEventListener("click", () => {
-            if (currentView === "trash") {
-                notes = notes.filter(currentNote => {
-                    return currentNote.id !== note.id;
-                });
-                saveToLocalStorage();
-                const trashedNotes = notes.filter(note => {
-                    return note.deleted;
-                });
-                renderNotes(trashedNotes);
-            } else {
-                note.deleted = true;
-                saveToLocalStorage();
-                renderNotes();
-            }
-        });
+        const editBtn = document.createElement("button");
+        editBtn.classList.add("edit-btn");
+        editBtn.textContent = "✏️";
+
         editBtn.addEventListener("click", () => {
+
             editingNoteId = note.id;
+
             noteTitle.value = note.title;
             noteContent.value = note.content;
             noteCategory.value = note.category;
+
             modalTitle.textContent = "Edit Note";
+
             noteModal.classList.remove("hidden");
+
         });
-        restoreBtn.addEventListener("click", () => {
-            note.deleted = false;
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.classList.add("delete-btn");
+        deleteBtn.textContent = "🗑️";
+
+        deleteBtn.addEventListener("click", () => {
+
+            if (currentView === "trash") {
+
+                notes = notes.filter(
+                    currentNote =>
+                        currentNote.id !== note.id
+                );
+
+            } else {
+
+                note.deleted = true;
+
+            }
+
             saveToLocalStorage();
-            const trashedNotes = notes.filter(note => {
-                return note.deleted;
-            });
-            renderNotes(trashedNotes);
+
+            if (currentView === "trash") {
+
+                renderNotes(
+                    notes.filter(
+                        currentNote =>
+                            currentNote.deleted
+                    )
+                );
+
+            } else {
+
+                renderNotes();
+
+            }
+
         });
+
+        const restoreBtn = document.createElement("button");
+        restoreBtn.classList.add("restore-btn");
+        restoreBtn.textContent = "♻️";
+
+        restoreBtn.addEventListener("click", () => {
+
+            note.deleted = false;
+
+            saveToLocalStorage();
+
+            renderNotes(
+                notes.filter(
+                    currentNote =>
+                        currentNote.deleted
+                )
+            );
+
+        });
+
+        const actionsDiv =
+            document.createElement("div");
+
+        actionsDiv.classList.add("card-actions");
+
+        if (currentView === "trash") {
+
+            actionsDiv.appendChild(restoreBtn);
+            actionsDiv.appendChild(deleteBtn);
+
+        } else {
+
+            actionsDiv.appendChild(editBtn);
+            actionsDiv.appendChild(deleteBtn);
+
+        }
+
         noteCard.appendChild(title);
         noteCard.appendChild(content);
         noteCard.appendChild(summary);
         noteCard.appendChild(tags);
         noteCard.appendChild(mood);
         noteCard.appendChild(timestamp);
-        if (!note.pinned && currentView !== "trash") {
-        noteCard.appendChild(pinBtn);
-    }
+
+        if (
+            !note.pinned &&
+            currentView !== "trash"
+        ) {
+            noteCard.appendChild(pinBtn);
+        }
+
         noteCard.appendChild(actionsDiv);
+
         notesGrid.appendChild(noteCard);
     });
 }
 
-function generateSummary(content) {
-    if (content.length <= 50) {
-        return content;
-    }
-    return content.substring(0, 50) + "...";
+function highlightText(text, searchTerm) {
+    if (!searchTerm) return text;
+
+    const regex = new RegExp(`(${searchTerm})`, "gi");
+
+    return text.replace(regex, "<mark>$1</mark>");
 }
 
-function generateTags(title, content, category) {
-    const text = (title + " " + content).toLowerCase();
+function updateStats() {
+    allCount.textContent = notes.filter(
+        note => !note.deleted
+    ).length;
+
+    projectsCount.textContent = notes.filter(
+        note =>
+            note.category === "Projects" &&
+            !note.deleted
+    ).length;
+
+    studyCount.textContent = notes.filter(
+        note =>
+            note.category === "Study" &&
+            !note.deleted
+    ).length;
+
+    personalCount.textContent = notes.filter(
+        note =>
+            note.category === "Personal" &&
+            !note.deleted
+    ).length;
+
+    ideasCount.textContent = notes.filter(
+        note =>
+            note.category === "Ideas" &&
+            !note.deleted
+    ).length;
+}
+
+function formatDate(timestamp) {
+    const date = new Date(timestamp);
+
+    const today = new Date();
+
+    if (
+        date.toDateString() ===
+        today.toDateString()
+    ) {
+        return "Today";
+    }
+
+    const yesterday = new Date();
+
+    yesterday.setDate(
+        today.getDate() - 1
+    );
+
+    if (
+        date.toDateString() ===
+        yesterday.toDateString()
+    ) {
+        return "Yesterday";
+    }
+
+    return date.toLocaleDateString(
+        "en-US",
+        {
+            month: "short",
+            day: "numeric",
+            year: "numeric"
+        }
+    );
+}
+
+function generateSummary(content) {
+    if (content.length <= 60) {
+        return content;
+    }
+
+    return (
+        content.substring(0, 60) + "..."
+    );
+}
+
+function generateTags(
+    title,
+    content,
+    category
+) {
+    const text = (
+        title +
+        " " +
+        content
+    ).toLowerCase();
+
     const tags = [];
 
-    if (text.includes("react")) tags.push("React");
-    if (text.includes("javascript")) tags.push("JavaScript");
-    if (text.includes("gym")) tags.push("Fitness");
-    if (text.includes("study")) tags.push("Study");
-    if (text.includes("project")) tags.push("Project");
+    if (text.includes("react"))
+        tags.push("React");
+
+    if (text.includes("javascript"))
+        tags.push("JavaScript");
+
+    if (text.includes("html"))
+        tags.push("HTML");
+
+    if (text.includes("css"))
+        tags.push("CSS");
+
+    if (text.includes("study"))
+        tags.push("Study");
+
+    if (text.includes("project"))
+        tags.push("Project");
+
+    if (text.includes("gym"))
+        tags.push("Fitness");
+
+    if (text.includes("idea"))
+        tags.push("Idea");
 
     tags.push(category);
 
@@ -350,18 +572,33 @@ function generateTags(title, content, category) {
 }
 
 function detectMood(content) {
-    const text = content.toLowerCase();
+    const text =
+        content.toLowerCase();
 
-    if (text.includes("learn") || text.includes("study")) {
+    if (
+        text.includes("study") ||
+        text.includes("learn")
+    ) {
         return "📚 Learning";
     }
 
-    if (text.includes("idea")) {
+    if (
+        text.includes("idea")
+    ) {
         return "💡 Creative";
     }
 
-    if (text.includes("urgent")) {
+    if (
+        text.includes("urgent")
+    ) {
         return "🔥 Urgent";
+    }
+
+    if (
+        text.includes("happy") ||
+        text.includes("great")
+    ) {
+        return "😊 Positive";
     }
 
     return "😌 Normal";
@@ -371,8 +608,7 @@ function saveToLocalStorage() {
     localStorage.setItem(
         "notes",
         JSON.stringify(notes)
-    )
+    );
 }
 
 renderNotes();
-
