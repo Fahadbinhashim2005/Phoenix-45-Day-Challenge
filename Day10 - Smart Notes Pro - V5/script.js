@@ -104,9 +104,10 @@ searchInput.addEventListener("input", () => {
 
     const filtered = notes.filter(note =>
         !note.deleted &&
+        (
         note.title.toLowerCase().includes(searchTerm) ||
         note.content.toLowerCase().includes(searchTerm)
-    );
+    ));
 
     renderNotes(filtered);
 });
@@ -283,6 +284,18 @@ function parseMarkdown(text) {
         .replace(/\n/g, "<br>");
 }
 
+noteModal.addEventListener("click", e => {
+    if (e.target === noteModal) {
+        noteModal.classList.add("hidden");
+    }
+});
+
+downloadModal.addEventListener("click", e => {
+    if (e.target === downloadModal) {
+        downloadModal.classList.add("hidden");
+    }
+});
+
 function renderNotes(notesToRender = notes) {
     updateStats();
     notesGrid.innerHTML = "";
@@ -361,9 +374,9 @@ function renderNotes(notesToRender = notes) {
         mood.textContent =
             "😊 " + (note.mood || "😌 Normal");
 
-            const summary = document.createElement("small");
-            const tags = document.createElement("small");
-            const mood = document.createElement("small");
+        summary.classList.add("ai-summary");
+        tags.classList.add("ai-tags");
+        mood.classList.add("ai-mood");
 
         const timestamp = document.createElement("small");
         timestamp.classList.add("note-date");
@@ -407,7 +420,9 @@ function renderNotes(notesToRender = notes) {
         deleteBtn.addEventListener("click", () => {
 
             if (currentView === "trash") {
-
+                if (!confirm("Delete this note permanently?")) {
+                    return;
+                }
                 notes = notes.filter(
                     currentNote =>
                         currentNote.id !== note.id
@@ -481,10 +496,7 @@ function renderNotes(notesToRender = notes) {
         noteCard.appendChild(mood);
         noteCard.appendChild(timestamp);
 
-        if (
-            !note.pinned &&
-            currentView !== "trash"
-        ) {
+        if (currentView !== "trash") {
             noteCard.appendChild(pinBtn);
         }
 
